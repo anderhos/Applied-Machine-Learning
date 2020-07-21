@@ -21,8 +21,8 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.decomposition import PCA
-#import numpy as np
-#import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
 
 # Read data
 df = pd.read_csv('CA3-train.csv')
@@ -41,9 +41,27 @@ sc = StandardScaler()
 X_train_std = sc.fit_transform(X_train)
 X_test_std = sc.transform(X_test)
 
-# PCA
-pca = PCA(n_components=10)
+# Initialize the PCA transformer and LogisticRegression estimator
+pca = PCA(n_components=None)
+#lr = LogisticRegression(multi_class='ovr', random_state=1, solver='lbfgs')
+# Dimensionality reduction
+X_train_pca = pca.fit_transform(X_train_std)
+X_test_pca = pca.fit_transform(X_test_std)
+print(pca.explained_variance_ratio_)
 
+# plot cumulative sum of explained variances
+var_exp = pca.explained_variance_ratio_
+cum_var_exp = np.cumsum(var_exp)
+plt.bar(range(1, 25), var_exp, alpha=0.5, align='center', label='Individual explained variances')
+plt.step(range(1, 25), cum_var_exp, where='mid', label='Cumulative explained variances')
+plt.xlabel('Explained variance ratio')
+plt.ylabel('Principal component index')
+plt.grid(True)
+plt.tight_layout()
+plt.show()
+
+# Fitting the logistic regression model on the reduced dataset
+#lr.fit(X_train_pca, y_train)
 
 
 
