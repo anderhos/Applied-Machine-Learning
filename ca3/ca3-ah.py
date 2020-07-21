@@ -40,7 +40,7 @@ X_train_std = sc.fit_transform(X_train)
 X_test_std = sc.transform(X_test)
 
 # PCA
-# Computing the covariance matrix
+# Constructing the covariance matrix
 cov_mat = np.cov(X_train_std.T)
 # Eigenvalue, eigenvector pairs
 eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
@@ -55,3 +55,14 @@ plt.step(range(1,25), cum_var_exp, where='mid', label='Cumulative explained vari
 plt.grid(True)
 plt.tight_layout()
 plt.show()
+
+# Comment: Use two PCs will explain little. 10 is better but hard to visualize
+
+# Sort eigenpairs by decreasing order of eigenvalues
+eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:, i]) for i in range(len(eigen_vals))]
+eigen_pairs.sort(key=lambda k: k[0], reverse=True)
+
+# collect 10 eigenvectors corresponds to the 10 largest eigenvalues to capture about
+# 70 percent of the variance in the dataset
+# Projection matrix
+w = np.hstack([(eigen_pairs[i][1][:, np.newaxis]) for i in range(10)])
