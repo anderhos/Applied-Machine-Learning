@@ -36,24 +36,39 @@ df = pd.read_csv('CA3-train.csv')
 # Assign features to X matrix and corresponding labels to vector y
 X, y = df.iloc[:, 1:25].values, df.iloc[:, 25]
 # Split the dataset by using train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.01, stratify=y,
-                                                    random_state=1)
-# Different test_sizes
-test_size = [0.6, 0.3, 0.1, 0.05, 0.01]
-
-
+test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
 # Standardizing our data to make algorithms behave better
 sc = StandardScaler()
-X_train_std = sc.fit_transform(X_train)
-X_test_std = sc.transform(X_test)
-
 # Initialize the PCA transformer
 n_components = 10
 pca = PCA(n_components=n_components, random_state=1)
-# Dimensionality reduction
-X_train_pca = pca.fit_transform(X_train_std)
-X_test_pca = pca.fit_transform(X_test_std)
-#print(pca.explained_variance_ratio_)
+
+# Accuracy for different test_train_splits
+
+for i in test_size_list:
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=i, stratify=y,
+                                                        random_state=1)
+    X_train_std = sc.fit_transform(X_train)
+    X_test_std = sc.transform(X_test)
+    # Dimensionality reduction
+    X_train_pca = pca.fit_transform(X_train_std)
+    X_test_pca = pca.fit_transform(X_test_std)
+    # Fitting the Perceptron on the reduced dataset
+    ppn = Perceptron(eta0=0.1, random_state=1)
+    ppn.fit(X_train_pca, y_train)
+    y_pred1 = ppn.predict(X_test_pca)
+    print(f'Misclassified examples PCA: {(y_test != y_pred1).sum()}')
+    print('Accuracy PCA: {:.3}'.format(ppn.score(X_test_pca, y_test)))
+
+    # Fitting the Perceptron on the original dataset
+    ppn2 = Perceptron(eta0=0.1, random_state=1)
+    ppn2.fit(X_train_std, y_train)
+    y_pred2 = ppn2.predict(X_test_std)
+    print(f'Misclassified examples: {(y_test != y_pred2).sum()}')
+    print('Accuracy: {:.3}'.format(ppn2.score(X_test, y_test)))
+
+# Note: Make plots, format better
+
 
 # plot cumulative sum of explained variances
 def plot_var_exp(n_components):
@@ -73,23 +88,6 @@ def plot_var_exp(n_components):
     plt.show()
 
 #plot_var_exp(n_components=10)
-
-# Fitting the Perceptron on the reduced dataset
-ppn = Perceptron(eta0=0.1, random_state=1)
-ppn.fit(X_train_pca, y_train)
-y_pred = ppn.predict(X_test_pca)
-print(f'Misclassified examples: {(y_test != y_pred).sum()}')
-print('Accuracy: {:.3}'.format(ppn.score(X_test_pca, y_test)))
-
-# Fitting the Perceptron on the original dataset
-ppn2 = Perceptron(eta0=0.1, random_state=1)
-ppn2.fit(X_train_std, y_train)
-y_pred = ppn2.predict(X_test_std)
-print(f'Misclassified examples: {(y_test != y_pred).sum()}')
-print('Accuracy: {:.3}'.format(ppn2.score(X_test, y_test)))
-
-
-# Task. Plot accuracy from different train_test_split. test_size.
 
 
 # Test with different train_test_splits and different eta
