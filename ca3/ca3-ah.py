@@ -66,3 +66,13 @@ eigen_pairs.sort(key=lambda k: k[0], reverse=True)
 # 70 percent of the variance in the dataset
 # Projection matrix
 w = np.hstack([(eigen_pairs[i][1][:, np.newaxis]) for i in range(10)])
+
+#print('Matrix W:\n', w)
+
+# transform dataset onto PCA subspace via matrix multiplication
+X_train_pca = X_train_std @ w
+print(X_train_pca)
+
+
+
+
