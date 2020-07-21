@@ -19,8 +19,10 @@ Compulsory assignment 3
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+from sklearn.decomposition import PCA
+#import numpy as np
+#import matplotlib.pyplot as plt
 
 # Read data
 df = pd.read_csv('CA3-train.csv')
@@ -40,38 +42,7 @@ X_train_std = sc.fit_transform(X_train)
 X_test_std = sc.transform(X_test)
 
 # PCA
-# Constructing the covariance matrix
-cov_mat = np.cov(X_train_std.T)
-# Eigenvalue, eigenvector pairs
-eigen_vals, eigen_vecs = np.linalg.eig(cov_mat)
-
-# plot the cumulative sum of explained variances
-tot = sum(eigen_vals)
-var_exp = [(i / tot) for i in sorted(eigen_vals, reverse=True)]
-cum_var_exp = np.cumsum(var_exp)
-plt.bar(range(1,25), var_exp, alpha=0.5, align='center',
-        label='Individual explained variance')
-plt.step(range(1,25), cum_var_exp, where='mid', label='Cumulative explained variance')
-plt.grid(True)
-plt.tight_layout()
-plt.show()
-
-# Comment: Use two PCs will explain little. 10 is better but hard to visualize
-
-# Sort eigenpairs by decreasing order of eigenvalues
-eigen_pairs = [(np.abs(eigen_vals[i]), eigen_vecs[:, i]) for i in range(len(eigen_vals))]
-eigen_pairs.sort(key=lambda k: k[0], reverse=True)
-
-# collect 10 eigenvectors corresponds to the 10 largest eigenvalues to capture about
-# 70 percent of the variance in the dataset
-# Projection matrix
-w = np.hstack([(eigen_pairs[i][1][:, np.newaxis]) for i in range(10)])
-
-#print('Matrix W:\n', w)
-
-# transform dataset onto PCA subspace via matrix multiplication
-X_train_pca = X_train_std @ w
-print(X_train_pca)
+pca = PCA(n_components=10)
 
 
 
