@@ -54,7 +54,7 @@ for i in test_size_list:
     X_train_pca = pca.fit_transform(X_train_std)
     X_test_pca = pca.fit_transform(X_test_std)
     # Fitting the Perceptron on the reduced dataset
-    ppn = Perceptron(eta0=0.1, random_state=1)
+    ppn = Perceptron(eta0=0.01, random_state=1)
     ppn.fit(X_train_pca, y_train)
     y_pred1 = ppn.predict(X_test_pca)
     print(f'Misclassified examples PCA: {(y_test != y_pred1).sum()}')
@@ -62,14 +62,14 @@ for i in test_size_list:
     print(f'Test size: {i}')
 
     # Fitting the Perceptron on the original dataset
-    ppn2 = Perceptron(eta0=0.1, random_state=1)
+    ppn2 = Perceptron(eta0=0.01, random_state=1)
     ppn2.fit(X_train_std, y_train)
     y_pred2 = ppn2.predict(X_test_std)
     print(f'Misclassified examples: {(y_test != y_pred2).sum()}')
     print('Accuracy: {:.3}'.format(ppn2.score(X_test, y_test)))
     print(f'Test size: {i}')
 
-# Note: Make plots, format better
+# Note: now test size is the last index of test_size_list
 
 # plot cumulative sum of explained variances
 def plot_var_exp(n_components):
