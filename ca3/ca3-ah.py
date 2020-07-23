@@ -93,7 +93,7 @@ def plot_var_exp(n_components):
 def plot_learning_rate(eta):
     ppn_score = []
     for learning_rate in eta:
-        ppn = Perceptron(eta0=learning_rate)
+        ppn = Perceptron(eta0=learning_rate, random_state=1)
         ppn.fit(X_train_std, y_train)
         ppn_score.append(ppn.score(X_test, y_test))
     plt.plot(range(len(ppn_score)), ppn_score)
@@ -106,10 +106,14 @@ def plot_learning_rate(eta):
 if __name__ == "__main__":
     # plot_var_exp(10)
     # Plot Learning Perceptron
-    random_state = 1
+    print(f"test size for plot learning rates: {i}")
     learning_rates = [0.2, 0.1, 0.05, 0.01, 0.001, 0.0001]
     plot_learning_rate(learning_rates)
 
+
+# Notes: learning rates entirely different at different seeds.
+# Might be prone to overfitting? Low learning rate.
+# Random_state = 1, good learning rate at around 0.01
 
 #plot_var_exp(n_components=10)
 
