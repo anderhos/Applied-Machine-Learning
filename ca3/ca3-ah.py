@@ -59,6 +59,7 @@ for i in test_size_list:
     y_pred1 = ppn.predict(X_test_pca)
     print(f'Misclassified examples PCA: {(y_test != y_pred1).sum()}')
     print('Accuracy PCA: {:.3}'.format(ppn.score(X_test_pca, y_test)))
+    print(f'Test size: {i}')
 
     # Fitting the Perceptron on the original dataset
     ppn2 = Perceptron(eta0=0.1, random_state=1)
@@ -66,9 +67,9 @@ for i in test_size_list:
     y_pred2 = ppn2.predict(X_test_std)
     print(f'Misclassified examples: {(y_test != y_pred2).sum()}')
     print('Accuracy: {:.3}'.format(ppn2.score(X_test, y_test)))
+    print(f'Test size: {i}')
 
 # Note: Make plots, format better
-
 
 # plot cumulative sum of explained variances
 def plot_var_exp(n_components):
@@ -86,6 +87,29 @@ def plot_var_exp(n_components):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+
+# Plot accuracy at different learning rates, eta, for Perceptron
+def plot_learning_rate(eta):
+    ppn_score = []
+    for learning_rate in eta:
+        ppn = Perceptron(eta0=learning_rate)
+        ppn.fit(X_train_std, y_train)
+        ppn_score.append(ppn.score(X_test, y_test))
+    plt.plot(range(len(ppn_score)), ppn_score)
+    # Note: Consider changing from index to learning rate
+    plt.xlabel('Learning rate index')
+    plt.ylabel('Accuracy')
+    plt.show()
+
+
+if __name__ == "__main__":
+    # plot_var_exp(10)
+    # Plot Learning Perceptron
+    random_state = 1
+    learning_rates = [0.2, 0.1, 0.05, 0.01, 0.001, 0.0001]
+    plot_learning_rate(learning_rates)
+
 
 #plot_var_exp(n_components=10)
 
