@@ -30,19 +30,28 @@ from sklearn.metrics import accuracy_score
 # 19 og 20 enda mer
 # f10 og f7 enda mer0.798
 # f9 og f8 0.798
-#
+
+# TASK:
+# find two features very little correlated, select those and drop the rest
 
 
 # Read data
 df = pd.read_csv('CA3-train.csv')
 # Drop features
-df = df.drop(['f4'], axis=1)
+#df = df.drop(['f4'], axis=1)
 
 # Search for missing values
 # print(df.isnull().sum()). Output = 0
 
 # Assign features to X matrix and corresponding labels to vector y
-X, y = df.iloc[:, 1:24].values, df.iloc[:, 24]
+
+# test dropping features via iloc
+c_first = 21
+c_last = 24    # not included
+X, y = df.iloc[:, c_first:c_last].values, df.iloc[:, 25]
+#print(df.iloc[:, 21:24])
+print(f"Selected features:", df.iloc[:, c_first:c_last].columns)
+
 # Split the dataset by using train_test_split
 test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
 # Standardizing our data to make algorithms behave better
