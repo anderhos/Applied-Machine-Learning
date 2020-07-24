@@ -25,22 +25,30 @@ from sklearn.metrics import accuracy_score
 - Make changes
 
 """
+# f5f6 ganske korrelerte
+# 13 og 14 enda mer korrelerte
+# 19 og 20 enda mer
+# f10 og f7 enda mer0.798
+# f9 og f8 0.798
+#
 
 
 # Read data
 df = pd.read_csv('CA3-train.csv')
+# Drop features
+df = df.drop(['f4'], axis=1)
 
 # Search for missing values
 # print(df.isnull().sum()). Output = 0
 
 # Assign features to X matrix and corresponding labels to vector y
-X, y = df.iloc[:, 1:25].values, df.iloc[:, 25]
+X, y = df.iloc[:, 1:24].values, df.iloc[:, 24]
 # Split the dataset by using train_test_split
 test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
 # Standardizing our data to make algorithms behave better
 sc = StandardScaler()
 # Initialize the PCA transformer
-n_components = 10
+n_components = 2
 pca = PCA(n_components=n_components, random_state=1)
 
 # Accuracy for different test_train_splits
@@ -108,7 +116,7 @@ if __name__ == "__main__":
     # Plot Learning Perceptron
     print(f"test size for plot learning rates: {i}")
     learning_rates = [0.2, 0.1, 0.05, 0.01, 0.001, 0.0001]
-    plot_learning_rate(learning_rates)
+    #plot_learning_rate(learning_rates)
 
 
 # Notes: learning rates entirely different at different seeds.
