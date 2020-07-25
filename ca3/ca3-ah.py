@@ -64,7 +64,7 @@ pca = PCA(n_components=n_components, random_state=1)
 
 # Accuracy for different test_train_splits
 
-# Function to plot decision regions. Only when two features are selected
+# Function to plot decision regions. Works only when two features are selected
 def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
 
     # Source Python for Machine Learning ch05
@@ -99,10 +99,15 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
                     c='', edgecolor='black', alpha=1.0,
                     linewidth=1, marker='o',
                     s=100, label='test set')
+    plt.xlabel('First feature [standardized]')
+    plt.ylabel('Second feature [standardized]')
+    plt.legend(loc='upper left')
+    plt.tight_layout()
+    plt.show()
 
 
 def combined(X_train, X_test, y_train, y_test):
-    # Stacking the data before plotting
+    # Function for stacking training and test data
     X_combined = np.vstack((X_train, X_test))
     y_combined = np.hstack((y_train, y_test))
     return X_combined, y_combined
@@ -134,16 +139,10 @@ for i in test_size_list:
     print(f'Test size: {i}')
 # Note: now test size is the last index of test_size_list
 
-X_combined, y_combined = combined(X_train_std, X_test_std, y_train, y_test)
+#
 
 # Plot results of classification
-plot_decision_regions(X=X_combined, y=y_combined,
-                      classifier=ppn)
-plt.xlabel('Firste feature [standardized]')
-plt.ylabel('Second feature [standardized]')
-plt.legend(loc='upper left')
-plt.tight_layout()
-plt.show()
+
 
 
 # plot cumulative sum of explained variances
@@ -186,6 +185,8 @@ if __name__ == "__main__":
     # Plot Learning Perceptron
     print(f"test size for plot learning rates: {i}")
     learning_rates = [0.2, 0.1, 0.05, 0.01, 0.001, 0.0001]
+    X_combined, y_combined = combined(X_train_pca, X_test_pca, y_train, y_test)
+    #plot_decision_regions(X=X_combined, y=y_combined, classifier=ppn)
     #plot_learning_rate(learning_rates)
 
 
