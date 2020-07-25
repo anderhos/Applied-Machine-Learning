@@ -36,13 +36,13 @@ missing_values = df.isnull().sum()
 if missing_values.any():
     print("Dataset has missing values")
 else:
-    print("No missing Values in dataset!")
+    print("No missing values in dataset!")
 
 # Assign features to X matrix and corresponding labels to vector y
 
 # features
-c_first = 15
-c_last = 17    # not included
+c_first = 1
+c_last = 25    # not included
 
 # Indexing features for plotting
 # Index only if number of features is two
@@ -57,9 +57,6 @@ print(f"Selected features:", df.iloc[:, c_first:c_last].columns)
 
 # Standardizing our data to make algorithms behave better
 sc = StandardScaler()
-# Initialize the PCA transformer
-n_components = 2
-pca = PCA(n_components=n_components, random_state=1)
 
 # Accuracy for different test_train_splits
 
@@ -112,28 +109,29 @@ def combined(X_train, X_test, y_train, y_test):
     return X_combined, y_combined
 
 
-def fit_test_size(X, y, test_size_list, PCA=False, seed=1):
+def fit_test_size(X, y, test_size_list, feature_extraction=False, n_components=None, seed=1):
     ppn = Perceptron(eta0=0.01, random_state=seed)
-    for i in test_size_list:
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=i, stratify=y,
+    for size in test_size_list:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=size, stratify=y,
                                                             random_state=seed)
         X_train_std = sc.fit_transform(X_train)
         X_test_std = sc.fit_transform(X_test)
-        if PCA:
+        if feature_extraction:
             # Dimensionality reduction through PCA
+            pca = PCA(n_components=n_components, random_state=1)
             X_train_pca = pca.fit_transform(X_train_std)
             X_test_pca = pca.fit_transform(X_test_std)
             ppn.fit(X_train_std, y_train)
             y_pred = ppn.predict(X_test_pca)
             print(f'Misclassified examples PCA: {(y_test != y_pred).sum()}')
             print('Accuracy PCA: {:.3}'.format(ppn.score(X_test_pca, y_test)))
-            print(f'Test size: {i}')
+            print(f'Test size: {size}')
         else:
             ppn.fit(X_train_std, y_train)
             y_pred = ppn.predict(X_test_std)
             print(f'Misclassified examples: {(y_test != y_pred).sum()}')
             print('Accuracy: {:.3}'.format(ppn.score(X_test, y_test)))
-            print(f'Test size: {i}')
+            print(f'Test size: {size}')
     # Note: After function call test size is the last index of test_size_list
 
 #
@@ -185,7 +183,7 @@ if __name__ == "__main__":
 
     # Split the dataset by using train_test_split
     test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
-    fit_test_size(X, y, test_size_list)
+    fit_test_size(X, y, test_size_list, feature_extraction=True, n_components=10)
 
 
     #X_combined, y_combined = combined(X_train_pca, X_test_pca, y_train, y_test)
