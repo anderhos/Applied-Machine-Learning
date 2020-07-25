@@ -14,6 +14,7 @@ from sklearn.linear_model import Perceptron
 from sklearn.decomposition import PCA
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
 from sklearn.metrics import accuracy_score
 
 """
@@ -25,29 +26,30 @@ from sklearn.metrics import accuracy_score
 - Make changes
 
 """
-# f5f6 ganske korrelerte
-# 13 og 14 enda mer korrelerte
-# 19 og 20 enda mer
-# f10 og f7 enda mer0.798
-# f9 og f8 0.798
-
-# TASK:
-# find two features very little correlated, select those and drop the rest
-
 
 # Read data
 df = pd.read_csv('CA3-train.csv')
-# Drop features
-#df = df.drop(['f4'], axis=1)
 
 # Search for missing values
-# print(df.isnull().sum()). Output = 0
+# Sum missing values for each column
+missing_values = df.isnull().sum()
+if missing_values.any():
+    print("Dataset has missing values")
+else:
+    print("No missing Values in dataset!")
 
 # Assign features to X matrix and corresponding labels to vector y
 
-# test dropping features via iloc
-c_first = 21
-c_last = 24    # not included
+# features
+c_first = 15
+c_last = 17    # not included
+
+# Indexing features for plotting
+# Index only if number of features is two
+if len(range(c_first, c_last)) == 2:
+    idx_1 = c_first
+    idx_2 = c_last - 1
+
 X, y = df.iloc[:, c_first:c_last].values, df.iloc[:, 25]
 #print(df.iloc[:, 21:24])
 print(f"Selected features:", df.iloc[:, c_first:c_last].columns)
@@ -62,6 +64,50 @@ pca = PCA(n_components=n_components, random_state=1)
 
 # Accuracy for different test_train_splits
 
+# Function to plot decision regions. Only when two features are selected
+def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
+
+    # Source Python for Machine Learning ch05
+    # setup marker generator and colormap
+    markers = ('s', 'x', 'o', '^', 'v')
+    colors = ('red', 'blue', 'lightgreen', 'gray', 'cyan')
+    cmap = ListedColormap(colors[:len(np.unique(y))])
+
+    # plot the decision surface
+    x1_min, x1_max = X[:, 0].min() - 1, X[:, 0].max() + 1
+    x2_min, x2_max = X[:, 1].min() - 1, X[:, 1].max() + 1
+    xx1, xx2 = np.meshgrid(np.arange(x1_min, x1_max, resolution),
+                           np.arange(x2_min, x2_max, resolution))
+    Z = classifier.predict(np.array([xx1.ravel(), xx2.ravel()]).T)
+    Z = Z.reshape(xx1.shape)
+    plt.contourf(xx1, xx2, Z, alpha=0.4, cmap=cmap)
+    plt.xlim(xx1.min(), xx2.max())
+    plt.ylim(xx2.min(), xx2.max())
+
+    # plot examples by class
+    for idx, cl in enumerate(np.unique(y)):
+        plt.scatter(x=X[y == cl, 0], y=X[y == cl, 1],
+                    alpha=0.8, c=colors[idx],
+                    marker=markers[idx], label=cl,
+                    edgecolor='black')
+    # highlight test examples
+    if test_idx:
+        # plot all examples
+        X_test, y_test = X[test_idx, :], y[test_idx]
+
+        plt.scatter(X_test[:, 0], X_test[:, 1],
+                    c='', edgecolor='black', alpha=1.0,
+                    linewidth=1, marker='o',
+                    s=100, label='test set')
+
+
+def combined(X_train, X_test, y_train, y_test):
+    # Stacking the data before plotting
+    X_combined = np.vstack((X_train, X_test))
+    y_combined = np.hstack((y_train, y_test))
+    return X_combined, y_combined
+
+
 for i in test_size_list:
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=i, stratify=y,
                                                         random_state=1)
@@ -71,6 +117,7 @@ for i in test_size_list:
     X_train_pca = pca.fit_transform(X_train_std)
     X_test_pca = pca.fit_transform(X_test_std)
     # Fitting the Perceptron on the reduced dataset
+
     ppn = Perceptron(eta0=0.01, random_state=1)
     ppn.fit(X_train_pca, y_train)
     y_pred1 = ppn.predict(X_test_pca)
@@ -85,8 +132,19 @@ for i in test_size_list:
     print(f'Misclassified examples: {(y_test != y_pred2).sum()}')
     print('Accuracy: {:.3}'.format(ppn2.score(X_test, y_test)))
     print(f'Test size: {i}')
-
 # Note: now test size is the last index of test_size_list
+
+X_combined, y_combined = combined(X_train_std, X_test_std, y_train, y_test)
+
+# Plot results of classification
+plot_decision_regions(X=X_combined, y=y_combined,
+                      classifier=ppn)
+plt.xlabel('Firste feature [standardized]')
+plt.ylabel('Second feature [standardized]')
+plt.legend(loc='upper left')
+plt.tight_layout()
+plt.show()
+
 
 # plot cumulative sum of explained variances
 def plot_var_exp(n_components):
@@ -118,6 +176,9 @@ def plot_learning_rate(eta):
     plt.xlabel('Learning rate index')
     plt.ylabel('Accuracy')
     plt.show()
+
+
+
 
 
 if __name__ == "__main__":
