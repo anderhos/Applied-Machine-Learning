@@ -54,8 +54,7 @@ X, y = df.iloc[:, c_first:c_last].values, df.iloc[:, 25]
 #print(df.iloc[:, 21:24])
 print(f"Selected features:", df.iloc[:, c_first:c_last].columns)
 
-# Split the dataset by using train_test_split
-test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
+
 # Standardizing our data to make algorithms behave better
 sc = StandardScaler()
 # Initialize the PCA transformer
@@ -113,31 +112,29 @@ def combined(X_train, X_test, y_train, y_test):
     return X_combined, y_combined
 
 
-for i in test_size_list:
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=i, stratify=y,
-                                                        random_state=1)
-    X_train_std = sc.fit_transform(X_train)
-    X_test_std = sc.transform(X_test)
-    # Dimensionality reduction
-    X_train_pca = pca.fit_transform(X_train_std)
-    X_test_pca = pca.fit_transform(X_test_std)
-    # Fitting the Perceptron on the reduced dataset
-
-    ppn = Perceptron(eta0=0.01, random_state=1)
-    ppn.fit(X_train_pca, y_train)
-    y_pred1 = ppn.predict(X_test_pca)
-    print(f'Misclassified examples PCA: {(y_test != y_pred1).sum()}')
-    print('Accuracy PCA: {:.3}'.format(ppn.score(X_test_pca, y_test)))
-    print(f'Test size: {i}')
-
-    # Fitting the Perceptron on the original dataset
-    ppn2 = Perceptron(eta0=0.01, random_state=1)
-    ppn2.fit(X_train_std, y_train)
-    y_pred2 = ppn2.predict(X_test_std)
-    print(f'Misclassified examples: {(y_test != y_pred2).sum()}')
-    print('Accuracy: {:.3}'.format(ppn2.score(X_test, y_test)))
-    print(f'Test size: {i}')
-# Note: now test size is the last index of test_size_list
+def fit_test_size(X, y, test_size_list, PCA=False, seed=1):
+    ppn = Perceptron(eta0=0.01, random_state=seed)
+    for i in test_size_list:
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=i, stratify=y,
+                                                            random_state=seed)
+        X_train_std = sc.fit_transform(X_train)
+        X_test_std = sc.fit_transform(X_test)
+        if PCA:
+            # Dimensionality reduction through PCA
+            X_train_pca = pca.fit_transform(X_train_std)
+            X_test_pca = pca.fit_transform(X_test_std)
+            ppn.fit(X_train_std, y_train)
+            y_pred = ppn.predict(X_test_pca)
+            print(f'Misclassified examples PCA: {(y_test != y_pred).sum()}')
+            print('Accuracy PCA: {:.3}'.format(ppn.score(X_test_pca, y_test)))
+            print(f'Test size: {i}')
+        else:
+            ppn.fit(X_train_std, y_train)
+            y_pred = ppn.predict(X_test_std)
+            print(f'Misclassified examples: {(y_test != y_pred).sum()}')
+            print('Accuracy: {:.3}'.format(ppn.score(X_test, y_test)))
+            print(f'Test size: {i}')
+    # Note: After function call test size is the last index of test_size_list
 
 #
 
@@ -182,10 +179,17 @@ def plot_learning_rate(eta):
 
 if __name__ == "__main__":
     # plot_var_exp(10)
+    # print(f"test size for plot learning rates: {i}")
     # Plot Learning Perceptron
-    print(f"test size for plot learning rates: {i}")
-    learning_rates = [0.2, 0.1, 0.05, 0.01, 0.001, 0.0001]
-    X_combined, y_combined = combined(X_train_pca, X_test_pca, y_train, y_test)
+    #learning_rates = [0.2, 0.1, 0.05, 0.01, 0.001, 0.0001]
+
+    # Split the dataset by using train_test_split
+    test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
+    fit_test_size(X, y, test_size_list)
+
+
+    #X_combined, y_combined = combined(X_train_pca, X_test_pca, y_train, y_test)
+
     #plot_decision_regions(X=X_combined, y=y_combined, classifier=ppn)
     #plot_learning_rate(learning_rates)
 
