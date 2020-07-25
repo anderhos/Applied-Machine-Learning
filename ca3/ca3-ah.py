@@ -121,7 +121,7 @@ def fit_test_size(X, y, test_size_list, feature_extraction=False, n_components=N
             pca = PCA(n_components=n_components, random_state=1)
             X_train_pca = pca.fit_transform(X_train_std)
             X_test_pca = pca.fit_transform(X_test_std)
-            ppn.fit(X_train_std, y_train)
+            ppn.fit(X_train_pca, y_train)
             y_pred = ppn.predict(X_test_pca)
             print(f'Misclassified examples PCA: {(y_test != y_pred).sum()}')
             print('Accuracy PCA: {:.3}'.format(ppn.score(X_test_pca, y_test)))
@@ -183,7 +183,7 @@ if __name__ == "__main__":
 
     # Split the dataset by using train_test_split
     test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
-    fit_test_size(X, y, test_size_list, feature_extraction=True, n_components=10)
+    fit_test_size(X, y, test_size_list, feature_extraction=True, n_components=2)
 
 
     #X_combined, y_combined = combined(X_train_pca, X_test_pca, y_train, y_test)
