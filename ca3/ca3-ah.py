@@ -130,6 +130,7 @@ def fit_test_size(X, y, test_size_list, feature_extraction=False, n_components=N
             ppn.fit(X_train_std, y_train)
             y_pred = ppn.predict(X_test_std)
             print(f'Misclassified examples: {(y_test != y_pred).sum()}')
+            print('Training Accuracy: {:.3}'.format(ppn.score(X_train_std, y_train)))
             print('Accuracy: {:.3}'.format(ppn.score(X_test, y_test)))
             print(f'Test size: {size}')
     # Note: After function call test size is the last index of test_size_list
@@ -183,7 +184,7 @@ if __name__ == "__main__":
 
     # Split the dataset by using train_test_split
     test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
-    fit_test_size(X, y, test_size_list, feature_extraction=True, n_components=2)
+    fit_test_size(X, y, test_size_list)
 
 
     #X_combined, y_combined = combined(X_train_pca, X_test_pca, y_train, y_test)
