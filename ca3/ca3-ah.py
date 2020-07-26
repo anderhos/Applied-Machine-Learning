@@ -110,7 +110,7 @@ def combined(X_train, X_test, y_train, y_test):
 
 
 def fit_test_size(X, y, test_size_list, feature_extraction=False, n_components=None, seed=1):
-    ppn = Perceptron(eta0=0.01, random_state=seed)
+    ppn = Perceptron(penalty='l1', alpha=0.001, eta0=0.01, random_state=seed)
     for size in test_size_list:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=size, stratify=y,
                                                             random_state=seed)
