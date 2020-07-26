@@ -131,7 +131,7 @@ def fit_test_size(X, y, test_size_list, feature_extraction=False, n_components=N
             y_pred = ppn.predict(X_test_std)
             print(f'Misclassified examples: {(y_test != y_pred).sum()}')
             print('Training Accuracy: {:.3}'.format(ppn.score(X_train_std, y_train)))
-            print('Accuracy: {:.3}'.format(ppn.score(X_test, y_test)))
+            print('Accuracy: {:.3}'.format(ppn.score(X_test_std, y_test)))
             print(f'Test size: {size}')
     # Note: After function call test size is the last index of test_size_list
 
