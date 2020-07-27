@@ -44,12 +44,6 @@ else:
 c_first = 1
 c_last = 25    # not included
 
-# Indexing features for plotting
-# Index only if number of features is two
-if len(range(c_first, c_last)) == 2:
-    idx_1 = c_first
-    idx_2 = c_last - 1
-
 X, y = df.iloc[:, c_first:c_last].values, df.iloc[:, 25]
 #print(df.iloc[:, 21:24])
 print(f"Selected features:", df.iloc[:, c_first:c_last].columns)
