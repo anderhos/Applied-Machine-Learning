@@ -15,7 +15,6 @@ from sklearn.decomposition import PCA
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
-from sklearn.metrics import accuracy_score
 
 """
 - Read the data
