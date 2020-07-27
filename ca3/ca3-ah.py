@@ -49,10 +49,18 @@ X, y = df.iloc[:, c_first:c_last].values, df.iloc[:, 25]
 print(f"Selected features:", df.iloc[:, c_first:c_last].columns)
 
 
+# Default parameters
+seed = 1
+test_size = 0.3
+
+# Splitting data with default parameters
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, stratify=y,
+                                                    random_state=seed)
+
 # Standardizing our data to make algorithms behave better
 sc = StandardScaler()
-
-# Accuracy for different test_train_splits
+X_train_std = sc.fit_transform(X_train)
+X_test_std = sc.fit_transform(X_test)
 
 # Function to plot decision regions. Works only when two features are selected
 def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
@@ -98,13 +106,14 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
 
 def combined(X_train, X_test, y_train, y_test):
     # Function for stacking training and test data
+    # To be used in plot_decision_regions
     X_combined = np.vstack((X_train, X_test))
     y_combined = np.hstack((y_train, y_test))
     return X_combined, y_combined
 
 
-def fit_test_size(X, y, test_size_list, feature_extraction=False, n_components=None, seed=1):
-    ppn = Perceptron(penalty='l1', alpha=0.001, eta0=0.01, random_state=seed)
+def fit_test_size(ppn, X, y, test_size_list, seed, feature_extraction=False, n_components=None):
+    # Accuracy for different test_train_splits
     for size in test_size_list:
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=size, stratify=y,
                                                             random_state=seed)
@@ -137,10 +146,10 @@ def fit_test_size(X, y, test_size_list, feature_extraction=False, n_components=N
 
 # plot cumulative sum of explained variances
 def plot_var_exp(n_components):
-    pca2 = PCA(n_components=n_components, random_state=1)
-    X_train_pca = pca2.fit_transform(X_train_std)
-    X_test_pca = pca2.fit_transform(X_test_std)
-    var_exp = pca2.explained_variance_ratio_
+    pca = PCA(n_components=n_components, random_state=1)
+    pca.fit_transform(X_train_std)
+    pca.fit_transform(X_test_std)
+    var_exp = pca.explained_variance_ratio_
     cum_var_exp = np.cumsum(var_exp)
     plt.bar(range(1, n_components + 1), var_exp, alpha=0.5, align='center',
             label='Individual explained variances')
@@ -178,7 +187,8 @@ if __name__ == "__main__":
 
     # Split the dataset by using train_test_split
     test_size_list = [0.6, 0.3, 0.1, 0.05, 0.01]
-    fit_test_size(X, y, test_size_list)
+    ppn = Perceptron(penalty='l1', alpha=0.001, eta0=0.01, random_state=seed)
+    fit_test_size(ppn, X, y, test_size_list, seed)
 
 
     #X_combined, y_combined = combined(X_train_pca, X_test_pca, y_train, y_test)
