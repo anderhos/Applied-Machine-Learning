@@ -102,7 +102,6 @@ def plot_decision_regions(X, y, classifier, test_idx=None, resolution=0.02):
     plt.tight_layout()
     plt.show()
 
-
 def combined(X_train, X_test, y_train, y_test):
     # Function for stacking training and test data
     # To be used in plot_decision_regions
