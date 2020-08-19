@@ -32,15 +32,21 @@ X_train = glass_df.iloc[:, 0:num_vars]
 
 # Classify our data using an estimator an varying
 # the parameters
-gs = GridSearchCV(estimator=DecisionTreeClassifier(
-    random_state=0),
-    param_grid=[{'max_depth': [1, 2, 3,
+
+
+def scores(GridSearchCV):
+    gs = GridSearchCV(estimator=DecisionTreeClassifier(
+                        random_state=0),
+                        param_grid=[{'max_depth': [1, 2, 3,
                                4, 5, 6,
                                7, None]}],
-    scoring='accuracy',
-    cv=2)
+                        scoring='accuracy',
+                        cv=2)
+    return cross_val_score(gs, X_train, y_train,
+                           scoring='accuracy', cv=6)
 
-scores = cross_val_score(gs, X_train, y_train,
-                         scoring='accuracy', cv=6)
-print(f'CV accuracy: {np.mean(scores)} +/- {np.std(scores)}')
-print(f'Max accuracy: {max(scores)}')
+
+if __name__ == "__main__":
+    acc_scores = scores(GridSearchCV)
+    print(f'CV accuracy: {np.mean(acc_scores)} +/- {np.std(acc_scores)}')
+    print(f'Max accuracy: {max(acc_scores)}')
