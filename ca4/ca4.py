@@ -81,4 +81,3 @@ if __name__ == "__main__":
     #print(gs_svc.best_params_)
     acc_scores = scores(GridSearchCV)
     print(f'CV accuracy: {np.mean(acc_scores)} +/- {np.std(acc_scores)}')
-    print(f'Max accuracy: {max(acc_scores)}')
