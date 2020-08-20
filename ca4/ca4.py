@@ -54,7 +54,7 @@ def grid_search_svc(GridSearchCV):
 
 def scores(GridSearchCV):
     gs = GridSearchCV(estimator=DecisionTreeClassifier(
-                        random_state=0),
+                        random_state=1),
                         param_grid=[{'max_depth': [1, 2, 3,
                                4, 5, 6,
                                7, None]}],
@@ -75,10 +75,10 @@ if __name__ == "__main__":
                    'kernelpca__kernel': ['linear', 'rbf'],
                    'kernelpca__gamma': gamma_range}]
     # Perform grid search and print out scores
-    gs_svc = grid_search_svc(GridSearchCV)
-    gs_svc.fit(X_train, y_train)
-    print(gs_svc.best_score_)
-    print(gs_svc.best_params_)
-    #acc_scores = scores(GridSearchCV)
-    #print(f'CV accuracy: {np.mean(acc_scores)} +/- {np.std(acc_scores)}')
-    #print(f'Max accuracy: {max(acc_scores)}')
+    #gs_svc = grid_search_svc(GridSearchCV)
+    #gs_svc.fit(X_train, y_train)
+    #print(gs_svc.best_score_)
+    #print(gs_svc.best_params_)
+    acc_scores = scores(GridSearchCV)
+    print(f'CV accuracy: {np.mean(acc_scores)} +/- {np.std(acc_scores)}')
+    print(f'Max accuracy: {max(acc_scores)}')
